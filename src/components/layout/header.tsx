@@ -18,11 +18,11 @@ export function Header() {
     <header className="flex items-center justify-between p-4 bg-card border-b sticky top-0 z-10 md:p-2 md:pl-4">
        <div className="flex items-center gap-2">
         <SidebarTrigger className="md:hidden" />
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3 md:hidden">
           <div className="p-2 bg-primary/20 rounded-lg">
             <Wallet className="h-6 w-6 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground font-headline hidden md:block">TrackWise</h1>
+          <h1 className="text-2xl font-bold text-foreground font-headline">TrackWise</h1>
         </Link>
       </div>
       <div>

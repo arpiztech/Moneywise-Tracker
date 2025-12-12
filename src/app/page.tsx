@@ -1,16 +1,13 @@
 "use client";
 
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import { initialTransactions, type Transaction } from '@/lib/data';
 
 import { Overview } from '@/components/dashboard/overview';
 import { RecentTransactions } from '@/components/dashboard/recent-transactions';
 import { BudgetOverview } from '@/components/dashboard/budget-overview';
 import { SpendingChart } from '@/components/dashboard/spending-chart';
-import { TransactionForm } from '@/components/dashboard/transaction-form';
 import { FinancialInsights } from '@/components/dashboard/financial-insights';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 
@@ -38,11 +35,6 @@ export default function Home() {
     <DashboardLayout>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold font-headline">Dashboard</h2>
-        <TransactionForm onSave={addTransaction}>
-           <Button>
-            <Plus className="mr-2 h-4 w-4" /> Add Transaction
-          </Button>
-        </TransactionForm>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
