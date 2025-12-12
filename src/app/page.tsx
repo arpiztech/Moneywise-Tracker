@@ -30,7 +30,7 @@ export default function Home() {
   const addTransaction = (transaction: Omit<Transaction, 'id' | 'date'> & { date: Date }) => {
     setTransactions(prev => [
       ...prev,
-      { ...transaction, id: crypto.randomUUID() },
+      { ...transaction, id: crypto.randomUUID(), date: new Date(transaction.date) },
     ]);
   };
 
