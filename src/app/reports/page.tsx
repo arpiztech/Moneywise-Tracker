@@ -86,7 +86,7 @@ export default function ReportsPage() {
                     onSelect={handleDateChange}
                     initialFocus
                     captionLayout="dropdown-buttons"
-                    fromYear={2020}
+                    fromYear={2015}
                     toYear={new Date().getFullYear() + 5}
                 />
             </PopoverContent>
