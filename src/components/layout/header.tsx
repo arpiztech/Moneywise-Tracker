@@ -1,4 +1,7 @@
+"use client";
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Wallet, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,9 +13,42 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useUser } from '@/firebase/auth/use-user';
+import { useToast } from '@/hooks/use-toast';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 export function Header() {
-  const user = null; // Mock user, will be replaced with real auth data
+  const { user, logout, loading } = useUser();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/login');
+      toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+      });
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Logout Failed',
+        description: error.message,
+      });
+    }
+  };
+  
+  if (loading) {
+    return (
+      <header className="flex items-center justify-between p-4 bg-card border-b sticky top-0 z-10 md:p-2 md:pl-4">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger className="md:hidden" />
+        </div>
+        <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+      </header>
+    );
+  }
 
   return (
     <header className="flex items-center justify-between p-4 bg-card border-b sticky top-0 z-10 md:p-2 md:pl-4">
@@ -30,23 +66,30 @@ export function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <UserCircle className="h-8 w-8" />
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || ''} />
+                  <AvatarFallback>
+                      <UserCircle className="h-8 w-8" />
+                  </AvatarFallback>
+                </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    {/* {user.name} */} Mock User
+                    {user.displayName}
                   </p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    {/* {user.email} */} mock@example.com
+                    {user.email}
                   </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Log out</DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/settings">Profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (

@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 import {
   Sidebar,
@@ -35,10 +35,33 @@ import { TransactionForm } from "../dashboard/transaction-form"
 import { Button } from "../ui/button"
 import { PlusCircle } from "lucide-react"
 import { type Transaction } from "@/lib/data"
+import { useUser } from "@/firebase/auth/use-user"
+import { useToast } from "@/hooks/use-toast"
 
 export function AppSidebar() {
   const pathname = usePathname()
   const { state } = useSidebar()
+  const { user, logout } = useUser();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/login');
+      toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+      });
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Logout Failed',
+        description: error.message,
+      });
+    }
+  };
+
 
   const menuItems = [
     {
@@ -169,6 +192,7 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   icon={<LogOut />}
                   tooltip="Logout"
+                  onClick={handleLogout}
                 >
                   Logout
                 </SidebarMenuButton>
