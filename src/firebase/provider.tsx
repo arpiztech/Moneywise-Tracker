@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useMemo } from '
 import type { FirebaseApp } from 'firebase/app';
 import type { Auth, User } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
-import { initializeFirebase } from '.';
+import { getInitializedFirebase } from '.';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -40,22 +40,27 @@ export function FirebaseProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const { firebaseApp, auth, firestore } = initializeFirebase();
-      setApp(firebaseApp);
-      setAuth(auth);
-      setDb(firestore);
+    const init = async () => {
+      try {
+        const { firebaseApp, auth, firestore } = await getInitializedFirebase();
+        setApp(firebaseApp);
+        setAuth(auth);
+        setDb(firestore);
 
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        setUser(user);
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          setUser(user);
+          setLoading(false);
+        });
+
+        return () => unsubscribe();
+      } catch (error) {
+        console.error("FirebaseProvider initialization error:", error);
         setLoading(false);
-      });
+      }
+    };
+    
+    init();
 
-      return () => unsubscribe();
-    } catch (error) {
-      console.error("FirebaseProvider initialization error:", error);
-      setLoading(false);
-    }
   }, []);
 
   const value = useMemo(

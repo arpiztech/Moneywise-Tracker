@@ -1,6 +1,11 @@
 'use client';
 import { initializeApp, getApp, getApps, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  type Auth,
+} from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { firebaseConfig } from './config';
 
@@ -8,6 +13,11 @@ import { firebaseConfig } from './config';
 let firebaseApp: FirebaseApp;
 let auth: Auth;
 let firestore: Firestore;
+
+// A promise to ensure persistence is set before using auth.
+let persistenceInitialized = false;
+let persistencePromise: Promise<void> | null = null;
+
 
 function initializeFirebase(): {
   firebaseApp: FirebaseApp;
@@ -27,8 +37,26 @@ function initializeFirebase(): {
   }
   auth = getAuth(firebaseApp);
   firestore = getFirestore(firebaseApp);
+
+  if (!persistenceInitialized) {
+    persistencePromise = setPersistence(auth, browserLocalPersistence).then(() => {
+      persistenceInitialized = true;
+    }).catch((error) => {
+      console.error("Firebase persistence error:", error);
+    });
+  }
+
   return { firebaseApp, auth, firestore };
 }
+
+
+export async function getInitializedFirebase() {
+  if (!persistenceInitialized && persistencePromise) {
+    await persistencePromise;
+  }
+  return initializeFirebase();
+}
+
 
 export { initializeFirebase };
 export * from './provider';
