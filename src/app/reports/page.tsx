@@ -1,13 +1,18 @@
+
 "use client";
 
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { initialTransactions, type Transaction, categories } from "@/lib/data";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getMonth, getYear, startOfMonth } from "date-fns";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -15,24 +20,19 @@ const formatCurrency = (amount: number) => {
 
 export default function ReportsPage() {
   const [transactions] = useState<Transaction[]>(initialTransactions);
-  const [selectedMonth, setSelectedMonth] = useState<string>(`${getYear(new Date())}-${getMonth(new Date())}`);
-
-  const availableMonths = Array.from(
-    new Set(transactions.map(t => `${getYear(t.date)}-${getMonth(t.date)}`))
-  ).map(m => {
-    const [year, month] = m.split('-');
-    return {
-      value: m,
-      label: new Date(Number(year), Number(month)).toLocaleString('default', { month: 'long', year: 'numeric' })
-    };
-  });
-
-  const handleMonthChange = (value: string) => {
-    setSelectedMonth(value);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+  
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+      setIsPickerOpen(false);
+    }
   }
 
-  const [year, month] = selectedMonth.split('-').map(Number);
-  const monthStart = startOfMonth(new Date(year, month));
+  const currentMonthStart = startOfMonth(selectedDate);
+  const year = getYear(currentMonthStart);
+  const month = getMonth(currentMonthStart);
 
   const filteredTransactions = transactions.filter(
     t => getYear(t.date) === year && getMonth(t.date) === month
@@ -66,16 +66,31 @@ export default function ReportsPage() {
             <CardTitle>Monthly Report</CardTitle>
             <CardDescription>A summary of your income and expenses for the selected month.</CardDescription>
           </div>
-          <Select onValueChange={handleMonthChange} value={selectedMonth}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select Month" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableMonths.map(m => (
-                <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover open={isPickerOpen} onOpenChange={setIsPickerOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                variant={"outline"}
+                className={cn(
+                    "w-[240px] justify-start text-left font-normal",
+                    !selectedDate && "text-muted-foreground"
+                )}
+                >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? format(selectedDate, "MMMM yyyy") : <span>Pick a month</span>}
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleDateChange}
+                    initialFocus
+                    captionLayout="dropdown-buttons"
+                    fromYear={2020}
+                    toYear={new Date().getFullYear() + 5}
+                />
+            </PopoverContent>
+          </Popover>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
