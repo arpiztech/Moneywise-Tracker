@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useUser } from '@/firebase/auth/use-user';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -23,7 +22,6 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function SignupPage() {
-  const { signup, updateUserProfile } = useUser();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -37,23 +35,12 @@ export default function SignupPage() {
   });
 
   const onSubmit = async (values: FormValues) => {
-    try {
-      const userCredential = await signup(values.email, values.password);
-      await updateUserProfile(userCredential.user, { displayName: values.fullName });
-      
-      toast({
-        title: 'Account Created',
-        description: "Welcome to TrackWise!",
-      });
-      router.push('/');
-
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Sign Up Failed',
-        description: error.message,
-      });
-    }
+    console.log(values);
+    toast({
+      title: 'Account Created',
+      description: "Welcome to TrackWise!",
+    });
+    router.push('/');
   };
 
   return (

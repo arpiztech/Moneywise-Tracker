@@ -13,18 +13,29 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { useUser } from '@/firebase/auth/use-user';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import React from 'react';
+
+// Mock user for demonstration
+const mockUser = {
+    displayName: "Mock User",
+    email: "mock@example.com",
+    photoURL: ""
+}
 
 export function Header() {
-  const { user, logout, loading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
+  const [user, setUser] = React.useState<any>(mockUser);
+  const [loading, setLoading] = React.useState(false);
+
 
   const handleLogout = async () => {
+    setLoading(true);
     try {
-      await logout();
+      // Mock logout
+      setUser(null);
       router.push('/login');
       toast({
         title: 'Logged Out',
@@ -36,6 +47,8 @@ export function Header() {
         title: 'Logout Failed',
         description: error.message,
       });
+    } finally {
+        setLoading(false);
     }
   };
   

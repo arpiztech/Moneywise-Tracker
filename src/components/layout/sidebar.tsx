@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -32,22 +31,19 @@ import {
   HelpCircle,
 } from "lucide-react"
 import { TransactionForm } from "../dashboard/transaction-form"
-import { Button } from "../ui/button"
 import { PlusCircle } from "lucide-react"
 import { type Transaction } from "@/lib/data"
-import { useUser } from "@/firebase/auth/use-user"
 import { useToast } from "@/hooks/use-toast"
 
 export function AppSidebar() {
   const pathname = usePathname()
   const { state } = useSidebar()
-  const { user, logout } = useUser();
   const router = useRouter();
   const { toast } = useToast();
 
   const handleLogout = async () => {
     try {
-      await logout();
+      // Mock logout
       router.push('/login');
       toast({
         title: 'Logged Out',

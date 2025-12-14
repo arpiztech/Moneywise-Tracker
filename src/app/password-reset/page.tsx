@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useUser } from '@/firebase/auth/use-user';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -20,7 +19,6 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function PasswordResetPage() {
-  const { resetPassword } = useUser();
   const { toast } = useToast();
 
   const form = useForm<FormValues>({
@@ -31,20 +29,12 @@ export default function PasswordResetPage() {
   });
 
   const onSubmit = async (values: FormValues) => {
-    try {
-      await resetPassword(values.email);
-      toast({
-        title: 'Password Reset Email Sent',
-        description: 'Check your inbox for instructions to reset your password.',
-      });
-      form.reset();
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error.message,
-      });
-    }
+    console.log(values);
+    toast({
+      title: 'Password Reset Email Sent',
+      description: 'Check your inbox for instructions to reset your password.',
+    });
+    form.reset();
   };
 
   return (

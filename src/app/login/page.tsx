@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useUser } from '@/firebase/auth/use-user';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -22,7 +21,6 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
-  const { login } = useUser();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -35,20 +33,13 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (values: FormValues) => {
-    try {
-      await login(values.email, values.password);
-      toast({
-        title: 'Login Successful',
-        description: "Welcome back!",
-      });
-      router.push('/');
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: error.message,
-      });
-    }
+    // Mock login
+    console.log(values);
+    toast({
+      title: 'Login Successful',
+      description: "Welcome back!",
+    });
+    router.push('/');
   };
 
   return (
