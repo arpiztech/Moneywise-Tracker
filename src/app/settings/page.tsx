@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useTheme } from "next-themes";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -9,8 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function SettingsPage() {
-  // In a real app, you'd fetch and update these settings
-  
+  const { theme, setTheme } = useTheme();
+  const [notifications, setNotifications] = useState(true);
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
@@ -45,14 +48,22 @@ export default function SettingsPage() {
                     <Label htmlFor="dark-mode" className="text-base">Dark Mode</Label>
                     <p className="text-sm text-muted-foreground">Enable or disable dark theme.</p>
                 </div>
-                <Switch id="dark-mode" />
+                <Switch 
+                  id="dark-mode"
+                  checked={theme === 'dark'}
+                  onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                />
             </div>
              <div className="flex items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
                     <Label htmlFor="notifications" className="text-base">Notifications</Label>
                     <p className="text-sm text-muted-foreground">Receive alerts for budgets and bills.</p>
                 </div>
-                <Switch id="notifications" checked/>
+                <Switch 
+                  id="notifications" 
+                  checked={notifications}
+                  onCheckedChange={setNotifications}
+                />
             </div>
           </CardContent>
         </Card>
