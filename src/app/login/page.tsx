@@ -12,6 +12,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { useEffect } from 'react';
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -23,6 +25,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { user, login } = useAuth();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -32,14 +35,27 @@ export default function LoginPage() {
     },
   });
 
+  useEffect(() => {
+    if (user) {
+      router.push('/');
+    }
+  }, [user, router]);
+
   const onSubmit = async (values: FormValues) => {
-    // Mock login
-    console.log(values);
-    toast({
-      title: 'Login Successful',
-      description: "Welcome back!",
-    });
-    router.push('/');
+    try {
+      await login(values.email, values.password);
+      toast({
+        title: 'Login Successful',
+        description: "Welcome back!",
+      });
+      router.push('/');
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: error.message,
+      });
+    }
   };
 
   return (

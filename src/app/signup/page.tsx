@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 
 const formSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
@@ -24,6 +25,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { signup } = useAuth();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -35,12 +37,20 @@ export default function SignupPage() {
   });
 
   const onSubmit = async (values: FormValues) => {
-    console.log(values);
-    toast({
-      title: 'Account Created',
-      description: "Welcome to TrackWise!",
-    });
-    router.push('/');
+    try {
+      await signup(values.email, values.password, values.fullName);
+       toast({
+        title: 'Account Created',
+        description: "Welcome to TrackWise!",
+      });
+      router.push('/');
+    } catch (error: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Signup Failed',
+            description: error.message,
+        });
+    }
   };
 
   return (

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 
 import {
   Sidebar,
@@ -33,31 +33,12 @@ import {
 import { TransactionForm } from "../dashboard/transaction-form"
 import { PlusCircle } from "lucide-react"
 import { type Transaction } from "@/lib/data"
-import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/hooks/use-auth"
 
 export function AppSidebar() {
   const pathname = usePathname()
   const { state } = useSidebar()
-  const router = useRouter();
-  const { toast } = useToast();
-
-  const handleLogout = async () => {
-    try {
-      // Mock logout
-      router.push('/login');
-      toast({
-        title: 'Logged Out',
-        description: 'You have been successfully logged out.',
-      });
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Logout Failed',
-        description: error.message,
-      });
-    }
-  };
-
+  const { logout } = useAuth();
 
   const menuItems = [
     {
@@ -105,7 +86,6 @@ export function AppSidebar() {
       label: "Export Data",
       icon: FileDown,
     },
-
   ]
 
   const bottomMenuItems = [
@@ -188,7 +168,7 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   icon={<LogOut />}
                   tooltip="Logout"
-                  onClick={handleLogout}
+                  onClick={logout}
                 >
                   Logout
                 </SidebarMenuButton>

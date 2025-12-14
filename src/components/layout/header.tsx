@@ -1,8 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Wallet, UserCircle } from 'lucide-react';
+import { Wallet, UserCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -13,45 +12,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import React from 'react';
-
-// Mock user for demonstration
-const mockUser = {
-    displayName: "Mock User",
-    email: "mock@example.com",
-    photoURL: ""
-}
+import { useAuth } from '@/hooks/use-auth';
 
 export function Header() {
-  const router = useRouter();
-  const { toast } = useToast();
-  const [user, setUser] = React.useState<any>(mockUser);
-  const [loading, setLoading] = React.useState(false);
+  const { user, loading, logout } = useAuth();
 
-
-  const handleLogout = async () => {
-    setLoading(true);
-    try {
-      // Mock logout
-      setUser(null);
-      router.push('/login');
-      toast({
-        title: 'Logged Out',
-        description: 'You have been successfully logged out.',
-      });
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Logout Failed',
-        description: error.message,
-      });
-    } finally {
-        setLoading(false);
-    }
-  };
-  
   if (loading) {
     return (
       <header className="flex items-center justify-between p-4 bg-card border-b sticky top-0 z-10 md:p-2 md:pl-4">
@@ -82,7 +48,7 @@ export function Header() {
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || ''} />
                   <AvatarFallback>
-                      <UserCircle className="h-8 w-8" />
+                      {user.displayName ? user.displayName.charAt(0).toUpperCase() : <UserCircle className="h-8 w-8" />}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -102,7 +68,7 @@ export function Header() {
               <DropdownMenuItem asChild>
                 <Link href="/settings">Profile</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
+              <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
